@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  slug        String    @unique
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id            String      @id @default(uuid())
+  wordpressId   Int?        @unique // ID en WordPress para evitar duplicados en la migración
+  name          String
+  slug          String      @unique
+  description   String?
+  price         Int         // Precio en CLP (pesos chilenos, siempre enteros)
+  stock         Int         @default(0)
+  imageUrl      String?
+  categoryId    String?
+  category      Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  orderItems    OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Order {
+  id             String      @id @default(uuid())
+  buyOrder       String      @unique // ID de orden para Transbank
+  sessionId      String
+  customerName   String
+  customerEmail  String
+  customerPhone  String?
+  total          Int
+  status         OrderStatus @default(PENDING)
+  token          String?     @unique // Token de transacción de Transbank
+  items          OrderItem[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  quantity  Int
+  price     Int      // Precio unitario al momento de la compra
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  FAILED
+}
