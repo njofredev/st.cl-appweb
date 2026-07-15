@@ -5,7 +5,7 @@ import { useCart } from '@/context/CartContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartDrawer from '@/components/CartDrawer';
-import { Zap, ChevronUp, Phone, Truck, Shield, Search, ChevronLeft, ChevronRight, CreditCard, Store, ShoppingBag, Landmark, Hammer, ArrowRight, UserCheck } from 'lucide-react';
+import { Zap, ChevronUp, Phone, Truck, Shield, Search, ChevronLeft, ChevronRight, CreditCard, Store, ShoppingBag, Landmark, Hammer, ArrowRight, UserCheck, FileText } from 'lucide-react';
 import Link from 'next/link';
 import QuantityModal from '@/components/QuantityModal';
 
@@ -200,8 +200,19 @@ export default function Home() {
   const [selectedModalProduct, setSelectedModalProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const scrollPosRef = useRef<number>(0);
+
+  // Estados y Ref para animar al llegar con scroll el CTA de Tuya Smart
+  const [isTuyaVisible, setIsTuyaVisible] = useState(false);
+  const tuyaSectionRef = useRef<HTMLElement>(null);
 
   const [isHovered, setIsHovered] = useState(false);
+  const [isHeroHovered, setIsHeroHovered] = useState(false);
+
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const scrollCarousel = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
@@ -216,15 +227,21 @@ export default function Home() {
   const handleCarouselScroll = () => {
     if (!carouselRef.current || filteredProducts.length === 0) return;
     const { scrollLeft, scrollWidth } = carouselRef.current;
+    
+    // Sincronizar nuestra referencia flotante para evitar saltos al reanudar
+    scrollPosRef.current = scrollLeft;
+
     const singleWidth = scrollWidth / 5;
 
     // Si nos movemos muy a la izquierda (cerca de la copia 1), saltar a la derecha
     if (scrollLeft < singleWidth * 1.5) {
       carouselRef.current.scrollLeft = scrollLeft + singleWidth;
+      scrollPosRef.current = scrollLeft + singleWidth;
     }
     // Si nos movemos muy a la derecha (cerca de la copia 5), saltar a la izquierda
     else if (scrollLeft > singleWidth * 3.5) {
       carouselRef.current.scrollLeft = scrollLeft - singleWidth;
+      scrollPosRef.current = scrollLeft - singleWidth;
     }
   };
 
@@ -257,29 +274,59 @@ export default function Home() {
 
   // Intervalo para el carrusel infinito del Hero
   useEffect(() => {
+    if (isHeroHovered) return;
     const slideTimer = setInterval(() => {
       setPrevSlide(currentSlide);
       setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
     }, 6000);
     return () => clearInterval(slideTimer);
-  }, [currentSlide]);
+  }, [currentSlide, isHeroHovered]);
+
+  // Observador de intersección para animar la sección de Tuya Smart al hacer scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsTuyaVisible(true);
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    if (tuyaSectionRef.current) {
+      observer.observe(tuyaSectionRef.current);
+    }
+
+    return () => {
+      if (tuyaSectionRef.current) {
+        observer.unobserve(tuyaSectionRef.current);
+      }
+    };
+  }, []);
 
   // Ticker constante y ultra smooth hacia la izquierda (contenido desplazándose a la izquierda)
   useEffect(() => {
     if (isHovered || filteredProducts.length === 0) return;
 
     let animationId: number;
+    
+    if (carouselRef.current) {
+      scrollPosRef.current = carouselRef.current.scrollLeft;
+    }
+
     const animate = () => {
       if (carouselRef.current) {
-        // Avance constante de 0.8px por frame (desplazamiento continuo a la izquierda)
-        carouselRef.current.scrollLeft += 0.8;
+        // Incrementar la posición flotante precisa
+        scrollPosRef.current += 0.35;
+        // Asignarla al elemento (el navegador la redondeará internamente al pixel/subpixel pero mantendremos la fracción)
+        carouselRef.current.scrollLeft = scrollPosRef.current;
       }
       animationId = requestAnimationFrame(animate);
     };
 
     animationId = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(animationId);
-  }, [products, isHovered]);
+  }, [products, isHovered, filteredProducts.length]);
 
   // Cargar productos reales de la base de datos si existen
   useEffect(() => {
@@ -320,11 +367,6 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const filteredProducts = products.filter(p =>
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <>
       {/* Shared Header */}
@@ -353,7 +395,11 @@ export default function Home() {
       </div>
 
       {/* Hero Banner (Ancho completo con Carrusel Deslizante Infinito) */}
-      <section className="hero-carousel-wrapper">
+      <section
+        className="hero-carousel-wrapper"
+        onMouseEnter={() => setIsHeroHovered(true)}
+        onMouseLeave={() => setIsHeroHovered(false)}
+      >
         <div className="hero-slides-container">
           {HERO_SLIDES.map((slide, idx) => {
             let slideClass = '';
@@ -407,43 +453,26 @@ export default function Home() {
       {/* Destacados Section */}
       <main className="container" style={{ paddingBottom: '2rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', marginTop: '1rem', flexWrap: 'wrap', gap: '1rem' }}>
-          <h2 className="section-title" style={{ margin: 0 }}>Nuestros <span style={{ color: 'var(--primary)' }}>Destacados</span></h2>
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-            <button
-              onClick={() => scrollCarousel('left')}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '50%', border: '1px solid var(--border)', backgroundColor: 'white', color: 'var(--secondary)', cursor: 'pointer', transition: 'var(--transition)' }}
-              className="carousel-nav-btn"
-              aria-label="Anterior"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <button
-              onClick={() => scrollCarousel('right')}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '50%', border: '1px solid var(--border)', backgroundColor: 'white', color: 'var(--secondary)', cursor: 'pointer', transition: 'var(--transition)' }}
-              className="carousel-nav-btn"
-              aria-label="Siguiente"
-            >
-              <ChevronRight size={20} />
-            </button>
-          </div>
+          <h2 className="section-title" style={{ margin: 0 }}>Productos <span style={{ color: 'var(--primary)' }}>Destacados</span></h2>
         </div>
 
         {searchQuery && <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Resultados para "{searchQuery}"</div>}
 
-        <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
+        <div
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          style={{ position: 'relative', width: '100%', overflow: 'hidden' }}
+        >
           <div
             ref={carouselRef}
             onScroll={handleCarouselScroll}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
             className="carousel-infinite-container"
             style={{
               display: 'flex',
               gap: '2rem',
               overflowX: 'auto',
               scrollSnapType: 'none',
-              padding: '0.5rem 0.25rem 2.5rem',
-              scrollBehavior: 'smooth'
+              padding: '0.5rem 0.25rem 2.5rem'
             }}
           >
             {[...filteredProducts, ...filteredProducts, ...filteredProducts, ...filteredProducts, ...filteredProducts].map((product, idx) => (
@@ -517,85 +546,310 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Cómo Comprar Section */}
-      <section style={{ backgroundColor: 'var(--surface-alt)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '5rem 2rem' }}>
+      {/* Tuya Smart CTA Section */}
+      <section ref={tuyaSectionRef} style={{ backgroundColor: '#0f172a', borderTop: '1px solid rgba(255,255,255,0.05)', padding: '5rem 2rem', overflow: 'hidden' }}>
         <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <h2 style={{ fontSize: '1.85rem', fontWeight: 900, color: 'var(--secondary)', marginBottom: '0.75rem' }}>Cómo comprar</h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '600px', margin: '0 auto' }}>Realiza tus compras de forma fácil y 100% segura en cuatro simples pasos</p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2.5rem', position: 'relative' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-              <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', marginBottom: '1.25rem', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border)', position: 'relative' }}>
-                <Search size={24} />
-                <span style={{ position: 'absolute', top: '-5px', right: '-5px', backgroundColor: 'var(--primary)', color: 'white', fontSize: '0.75rem', fontWeight: '800', width: '22px', height: '22px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>1</span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+            {/* Left Side: Info & Badges */}
+            <div className={isTuyaVisible ? "animate-fade-up" : ""} style={{ opacity: isTuyaVisible ? 1 : 0, transition: 'opacity 0.3s ease' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(227, 82, 5, 0.15)', color: 'var(--primary)', padding: '0.4rem 1rem', borderRadius: '30px', fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', marginBottom: '1.5rem', letterSpacing: '1px' }}>
+                <Zap size={14} /> Smart Home
               </div>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.5rem' }}>Explora el catálogo</h4>
-              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>Navega por nuestra selección de insumos, torres pop-up y tableros eléctricos certificados.</p>
+              <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#ffffff', lineHeight: '1.15', marginBottom: '1.25rem' }}>
+                Controla tus dispositivos <span style={{ color: 'var(--primary)' }}>Soteel Smart</span> desde tu celular
+              </h2>
+              <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '2rem' }}>
+                Nuestras torres pop-up inteligentes y enchufes motorizados son totalmente compatibles con la aplicación <strong>Tuya Smart / Smart Life</strong>. Administra la energía de tus espacios, programa encendidos y monitorea el consumo de manera remota mediante conexión Wi-Fi de forma ágil y 100% integrada.
+              </p>
+
+              {/* Badges container */}
+              <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                <a 
+                  href="https://apps.apple.com/es/app/tuya-smart-life-smart-living/id1034649547" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ display: 'inline-flex', height: '46px', width: '138px', transition: 'transform 0.2s ease' }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  <img 
+                    src="/appstore_badge.png" 
+                    alt="Descargar en App Store" 
+                    style={{ height: '46px', width: '138px', display: 'block', borderRadius: '5px' }}
+                  />
+                </a>
+                <a 
+                  href="https://play.google.com/store/apps/details?id=com.tuya.smart&hl=es_CL" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ display: 'inline-flex', height: '52px', width: '140px', transition: 'transform 0.2s ease' }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  <img 
+                    src="/playstore_badge.png" 
+                    alt="Descargar en Google Play Store" 
+                    style={{ height: '52px', width: '140px', display: 'block', borderRadius: '5px' }}
+                  />
+                </a>
+              </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-              <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', marginBottom: '1.25rem', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border)', position: 'relative' }}>
-                <ShoppingBag size={24} />
-                <span style={{ position: 'absolute', top: '-5px', right: '-5px', backgroundColor: 'var(--primary)', color: 'white', fontSize: '0.75rem', fontWeight: '800', width: '22px', height: '22px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>2</span>
+            {/* Right Side: Tuya App Image Display */}
+            <div style={{ display: 'flex', justifyContent: 'center', opacity: isTuyaVisible ? 1 : 0, transition: 'opacity 0.3s ease' }} className={isTuyaVisible ? "animate-scale-up" : ""}>
+              <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', overflow: 'hidden', width: '100%', maxWidth: '380px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+                <img 
+                  src="/tuya_app_display.jpg" 
+                  alt="Tuya Smart Application Control" 
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
               </div>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.5rem' }}>Elige tus productos</h4>
-              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>Ajusta las cantidades que necesitas en nuestra ventana modal y agrégalas al carro de compras.</p>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-              <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', marginBottom: '1.25rem', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border)', position: 'relative' }}>
-                <UserCheck size={24} />
-                <span style={{ position: 'absolute', top: '-5px', right: '-5px', backgroundColor: 'var(--primary)', color: 'white', fontSize: '0.75rem', fontWeight: '800', width: '22px', height: '22px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>3</span>
-              </div>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.5rem' }}>Datos y Facturación</h4>
-              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>Rellena la información básica de despacho y facturación de manera segura.</p>
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-              <div style={{ width: '60px', height: '60px', borderRadius: '50%', backgroundColor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', marginBottom: '1.25rem', boxShadow: 'var(--shadow-sm)', border: '1px solid var(--border)', position: 'relative' }}>
-                <CreditCard size={24} />
-                <span style={{ position: 'absolute', top: '-5px', right: '-5px', backgroundColor: 'var(--primary)', color: 'white', fontSize: '0.75rem', fontWeight: '800', width: '22px', height: '22px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>4</span>
-              </div>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.5rem' }}>Pago Seguro y Despacho</h4>
-              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>Completa el pago vía Webpay con débito o crédito y retira en tienda o recibe a domicilio.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Proyectos Section */}
-      <section style={{ padding: '5rem 2rem' }}>
+      {/* Cómo Comprar o Cotizar Section */}
+      <section style={{ backgroundColor: '#f8fafc', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '5.5rem 2rem' }}>
         <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <h2 style={{ fontSize: '1.85rem', fontWeight: 900, color: 'var(--secondary)', marginBottom: '0.75rem' }}>Proyectos</h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '600px', margin: '0 auto' }}>Respaldando la infraestructura eléctrica de grandes empresas e instaladores autorizados a lo largo de todo Chile.</p>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(227, 82, 5, 0.08)', color: 'var(--primary)', padding: '0.4rem 1.25rem', borderRadius: '30px', fontSize: '0.8rem', fontWeight: '800', textTransform: 'uppercase', marginBottom: '1rem', letterSpacing: '1px' }}>
+              Proceso de Compra y Cotización
+            </div>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: 'var(--secondary)', marginBottom: '0.75rem', lineHeight: '1.2' }}>
+              ¿Cómo <span style={{ color: 'var(--primary)' }}>comprar</span> o <span style={{ color: 'var(--primary)' }}>cotizar</span> en Soteel?
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.6' }}>
+              Te ofrecemos dos canales rápidos e integrados para abastecer tus proyectos eléctricos de forma ágil y 100% segura.
+            </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2rem' }}>
-            <div style={{ backgroundColor: 'white', border: '1px solid var(--border)', padding: '2rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', transition: 'var(--transition)' }} className="project-card-home">
-              <Landmark style={{ color: 'var(--primary)', marginBottom: '1.25rem' }} size={32} />
-              <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.5rem' }}>Ingeniería Eje Central</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>Suministro de torres de enchufe pop-up y canalizaciones eléctricas avanzadas para modernas oficinas corporativas en Las Condes.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '3rem' }}>
+            
+            {/* PATH A: Compra Directa */}
+            <div className="process-card-group" style={{ backgroundColor: '#ffffff', border: '1px solid var(--border)', borderRadius: '20px', padding: '2.5rem', boxShadow: 'var(--shadow-md)', transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: 'rgba(227, 82, 5, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>
+                  <ShoppingBag size={22} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: '900', color: 'var(--secondary)', margin: 0 }}>Ruta 1: Compra Directa</h3>
+                  <span style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Carro de Compras 100% Online</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', flex: 1 }}>
+                {/* Step 1 */}
+                <div style={{ display: 'flex', gap: '1.25rem' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: '900', flexShrink: 0, marginTop: '2px' }}>1</div>
+                  <div>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--secondary)', marginBottom: '0.35rem' }}>Selecciona en Catálogo</h4>
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>Navega por la tienda, ajusta las cantidades que necesitas en la ventana modal y agrégalas al carro.</p>
+                  </div>
+                </div>
+                {/* Step 2 */}
+                <div style={{ display: 'flex', gap: '1.25rem' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: '900', flexShrink: 0, marginTop: '2px' }}>2</div>
+                  <div>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--secondary)', marginBottom: '0.35rem' }}>Paga Seguro con Webpay</h4>
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>Finaliza la transacción con tarjeta de débito o crédito mediante pasarela Webpay protegida de forma instantánea.</p>
+                  </div>
+                </div>
+                {/* Step 3 */}
+                <div style={{ display: 'flex', gap: '1.25rem' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: '900', flexShrink: 0, marginTop: '2px' }}>3</div>
+                  <div>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--secondary)', marginBottom: '0.35rem' }}>Despacho o Retiro en Sucursal</h4>
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>Retira sin costo en nuestro punto de entrega La Reina o recibe a domicilio con despacho rápido a todo Chile.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '2.5rem' }}>
+                <Link href="/productos" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.85rem', backgroundColor: 'var(--primary)', color: 'white', borderRadius: '12px', fontWeight: 'bold', fontSize: '0.88rem', textDecoration: 'none', transition: 'var(--transition)' }} className="btn-primary-hover-glow">
+                  Explorar Tienda <ArrowRight size={16} />
+                </Link>
+              </div>
             </div>
 
-            <div style={{ backgroundColor: 'white', border: '1px solid var(--border)', padding: '2rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', transition: 'var(--transition)' }} className="project-card-home">
-              <Zap style={{ color: 'var(--primary)', marginBottom: '1.25rem' }} size={32} />
-              <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.5rem' }}>Instalaciones SEC Valparaíso</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>Provisión de dispositivos de protección monofásica ATS y conductores de cobre certificados para proyectos de viviendas residenciales.</p>
+            {/* PATH B: Cotización Formal */}
+            <div className="process-card-group" style={{ backgroundColor: '#ffffff', border: '1px solid var(--border)', borderRadius: '20px', padding: '2.5rem', boxShadow: 'var(--shadow-md)', transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: 'rgba(227, 82, 5, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>
+                  <FileText size={22} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: '900', color: 'var(--secondary)', margin: 0 }}>Ruta 2: Cotización Formal</h3>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Presupuestos Rápidos en PDF</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', flex: 1 }}>
+                {/* Step 1 */}
+                <div style={{ display: 'flex', gap: '1.25rem' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--secondary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: '900', flexShrink: 0, marginTop: '2px' }}>1</div>
+                  <div>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--secondary)', marginBottom: '0.35rem' }}>Arma tu Lista de Materiales</h4>
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>Agrega insumos a la planilla del cotizador profesional, introduce tus datos y configura el formato de tu cotización.</p>
+                  </div>
+                </div>
+                {/* Step 2 */}
+                <div style={{ display: 'flex', gap: '1.25rem' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--secondary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: '900', flexShrink: 0, marginTop: '2px' }}>2</div>
+                  <div>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--secondary)', marginBottom: '0.35rem' }}>Genera y Descarga en PDF</h4>
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>Revisa la hoja de cotización formateada para carta e imprímela o guárdala en formato PDF al instante sin costos.</p>
+                  </div>
+                </div>
+                {/* Step 3 */}
+                <div style={{ display: 'flex', gap: '1.25rem' }}>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: 'var(--secondary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', fontWeight: '900', flexShrink: 0, marginTop: '2px' }}>3</div>
+                  <div>
+                    <h4 style={{ fontSize: '0.95rem', fontWeight: '800', color: 'var(--secondary)', marginBottom: '0.35rem' }}>Coordina Pago y Despacho</h4>
+                    <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>Envía el documento descargado para aprobación y coordina la facturación y entrega directamente con tu ejecutivo.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '2.5rem' }}>
+                <Link href="/cotizador" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.85rem', backgroundColor: 'var(--secondary)', color: 'white', borderRadius: '12px', fontWeight: 'bold', fontSize: '0.88rem', textDecoration: 'none', transition: 'var(--transition)' }} className="btn-secondary-hover-glow">
+                  Cotizar en Línea <ArrowRight size={16} />
+                </Link>
+              </div>
             </div>
 
-            <div style={{ backgroundColor: 'white', border: '1px solid var(--border)', padding: '2rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', transition: 'var(--transition)' }} className="project-card-home">
-              <Store style={{ color: 'var(--primary)', marginBottom: '1.25rem' }} size={32} />
-              <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.5rem' }}>Solar del Sur SpA</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>Apoyo en el equipamiento solar y conectores libres de halógeno para plantas de energía renovable no convencional de baja escala.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Sucursal de Entrega Section */}
+      <section style={{ backgroundColor: '#ffffff', borderBottom: '1px solid var(--border)', padding: '5rem 2rem' }}>
+        <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
+            <h2 style={{ fontSize: '1.85rem', fontWeight: 900, color: 'var(--secondary)', marginBottom: '0.75rem' }}>
+              Sucursal de entrega <span style={{ color: 'var(--primary)' }}>Mr.Storage</span> La Reina
+            </h2>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3.5rem' }}>
+            {/* Google Maps Column */}
+            <div>
+              <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: '0.5rem', marginBottom: '1.5rem', display: 'inline-block' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Google Maps
+                </span>
+              </div>
+              <a 
+                href="https://maps.app.goo.gl/r6aXF6UoD8jN5oQD8" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                style={{ display: 'block', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', transition: 'transform 0.2s ease' }}
+                className="sucursal-link-card"
+              >
+                <img 
+                  src="/mapa_sucursal.png" 
+                  alt="Ubicación Google Maps" 
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+              </a>
             </div>
 
-            <div style={{ backgroundColor: 'white', border: '1px solid var(--border)', padding: '2rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-sm)', transition: 'var(--transition)' }} className="project-card-home">
-              <Hammer style={{ color: 'var(--primary)', marginBottom: '1.25rem' }} size={32} />
-              <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--secondary)', marginBottom: '0.5rem' }}>Constructora Alto Santiago</h4>
-              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.6' }}>Alianza estratégica para el despacho programado de material de ferretería eléctrica e insumos de iluminación habitacional.</p>
+            {/* Photo Column */}
+            <div>
+              <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: '0.5rem', marginBottom: '1.5rem', display: 'inline-block' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Jorge Alessandri 364, La Reina, RM.
+                </span>
+              </div>
+              <div style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
+                <img 
+                  src="/mr_storage.png" 
+                  alt="Mr. Storage Sucursal de Entrega" 
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Clientes Section */}
+      <section style={{ padding: '5rem 2rem', backgroundColor: '#ffffff' }}>
+        <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={{ fontSize: '1.85rem', fontWeight: 900, color: 'var(--secondary)', marginBottom: '0.75rem' }}>Clientes</h2>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '3rem', alignItems: 'center', justifyItems: 'center' }}>
+            {/* Cliente 1: Wood Inmobiliaria */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '240px' }}>
+              <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: '0.4rem', marginBottom: '1.5rem', width: '100%', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.65rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Proyecto Santa María 8700
+                </span>
+              </div>
+              {/* Logo WOOD */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0f2c59', fontFamily: 'serif' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#0f2c59', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '1.25rem', fontWeight: 'bold' }}>
+                  W
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1' }}>
+                  <span style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '2px' }}>WOOD</span>
+                  <span style={{ fontSize: '0.45rem', letterSpacing: '4px', marginTop: '2px', fontWeight: 'bold' }}>INMOBILIARIA</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Cliente 2: NALP Constructora */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '240px' }}>
+              <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: '0.4rem', marginBottom: '1.5rem', width: '100%', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.65rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Proyecto La Reina
+                </span>
+              </div>
+              {/* Logo NALP */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#005bb5', textAlign: 'center' }}>
+                <div style={{ width: '60px', height: '60px', border: '3px solid #005bb5', transform: 'rotate(45deg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
+                  <span style={{ transform: 'rotate(-45deg)', fontSize: '1.5rem', fontWeight: '900', color: '#005bb5', fontFamily: 'sans-serif', marginTop: '2px' }}>A</span>
+                </div>
+                <span style={{ fontSize: '1.6rem', fontWeight: '900', letterSpacing: '3px', color: '#333333', lineHeight: '1' }}>NALP</span>
+                <span style={{ fontSize: '0.55rem', letterSpacing: '1px', color: '#666666', fontWeight: 'bold', marginTop: '2px' }}>Constructora</span>
+              </div>
+            </div>
+
+            {/* Cliente 3: Fuegos */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '240px' }}>
+              <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: '0.4rem', marginBottom: '1.5rem', width: '100%', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.65rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Proyecto Vitacura
+                </span>
+              </div>
+              {/* Logo FUEGOS */}
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#1a1a1a', textAlign: 'center' }}>
+                <svg viewBox="0 0 24 24" width="40" height="40" fill="currentColor" style={{ marginBottom: '0.5rem' }}>
+                  <path d="M12 2C12 2 15 6.5 15 9.5C15 12.5 12 15 12 15C12 15 9 12.5 9 9.5C9 6.5 12 2 12 2Z" />
+                  <path d="M12 6C12 6 13.5 9 13.5 11C13.5 13 12 14.5 12 14.5C12 14.5 10.5 13 10.5 11C10.5 9 12 6 12 6Z" opacity="0.7"/>
+                </svg>
+                <span style={{ fontSize: '1.15rem', fontWeight: '800', letterSpacing: '6px', textTransform: 'uppercase' }}>FUEGOS</span>
+              </div>
+            </div>
+
+            {/* Cliente 4: Proyekta */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '240px' }}>
+              <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: '0.4rem', marginBottom: '1.5rem', width: '100%', textAlign: 'center' }}>
+                <span style={{ fontSize: '0.65rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Proyecto Vitacura
+                </span>
+              </div>
+              {/* Logo PROYEKTA */}
+              <div style={{ backgroundColor: '#1a1a1a', color: '#ffffff', padding: '1rem 1.5rem', textAlign: 'center', fontFamily: 'sans-serif', minWidth: '120px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1', alignItems: 'center' }}>
+                  <span style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '1px' }}>PRO</span>
+                  <span style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '1px' }}>YEK</span>
+                  <span style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '1px' }}>TA.</span>
+                  <span style={{ fontSize: '0.35rem', letterSpacing: '1.5px', marginTop: '6px', fontWeight: 'bold', color: '#999999' }}>CONSTRUCTORA</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -604,16 +858,7 @@ export default function Home() {
       {/* Shared Footer */}
       <Footer />
 
-      {/* WhatsApp Floating Button */}
-      <a
-        className="whatsapp-float"
-        href="https://wa.me/56912345678"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Contactar por WhatsApp"
-      >
-        <Phone size={24} style={{ fill: 'white' }} />
-      </a>
+
 
       {/* Scroll to Top */}
       {showScrollTop && (

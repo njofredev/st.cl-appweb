@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/context/CartContext";
+import FloatingActions from "@/components/FloatingActions";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   variable: "--font-plus-jakarta",
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <CartProvider>
           {children}
+          <FloatingActions />
         </CartProvider>
       </body>
     </html>

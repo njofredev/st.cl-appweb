@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { Search, ShoppingCart, Zap, Youtube, Info, MapPin, BookOpen, User, MessageSquare, Phone, ChevronDown, Menu, X } from 'lucide-react';
+import { Search, ShoppingCart, Zap, Youtube, Info, MapPin, BookOpen, User, MessageSquare, Phone, ChevronDown, Menu, X, FileText, Store } from 'lucide-react';
 
 interface HeaderProps {
   onSearchChange?: (query: string) => void;
@@ -47,6 +47,14 @@ export default function Header({ onSearchChange, initialSearchQuery = '' }: Head
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsFocused(false); // Ocultar dropdown al enviar formulario
+    if (query.trim() === '') {
+      if (onSearchChange) {
+        onSearchChange('');
+      } else {
+        router.push('/productos');
+      }
+      return;
+    }
     if (onSearchChange) {
       onSearchChange(query);
     } else {
@@ -78,9 +86,9 @@ export default function Header({ onSearchChange, initialSearchQuery = '' }: Head
             <Link href="/contacto" className="top-bar-link">
               <MapPin size={12} style={{ display: 'inline', marginRight: '0.2rem' }} /> Sucursales
             </Link>
-            <a href="#" className="top-bar-link">
-              <BookOpen size={12} style={{ display: 'inline', marginRight: '0.2rem' }} /> Catálogos
-            </a>
+            <Link href="/productos" className="top-bar-link">
+              <Store size={12} style={{ display: 'inline', marginRight: '0.2rem' }} /> Tienda
+            </Link>
           </div>
           <div className="top-bar-right">
             <a href="https://www.youtube.com/@josegarces3670" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
@@ -167,10 +175,10 @@ export default function Header({ onSearchChange, initialSearchQuery = '' }: Head
 
           {/* Actions */}
           <div className="header-actions">
-            <button className="header-action-item" aria-label="Mi Cuenta">
-              <User size={18} />
-              <span>Mi Cuenta</span>
-            </button>
+            <Link href="/cotizador" className="header-action-item" style={{ textDecoration: 'none', color: 'var(--secondary)' }} aria-label="Cotiza en Línea">
+              <FileText size={18} />
+              <span>Cotiza en Línea</span>
+            </Link>
             <button className="header-action-item" onClick={() => setIsCartOpen(true)} aria-label="Carrito">
               <div className="cart-icon-wrapper">
                 <ShoppingCart size={18} />
@@ -255,7 +263,7 @@ export default function Header({ onSearchChange, initialSearchQuery = '' }: Head
               </Link>
             </li>
             <li>
-              <Link href="/productos?category=solar" className="nav-item-link">
+              <Link href="/productos?category=solar" className={`nav-item-link ${pathname === '/productos' && typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('category') === 'solar' ? 'active' : ''}`}>
                 Nuevas Energías
               </Link>
             </li>

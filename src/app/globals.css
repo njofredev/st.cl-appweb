@@ -55,6 +55,11 @@ a {
   text-decoration: none;
 }
 
+/* Enforce consistent font-family across header components */
+.top-bar, .header-main, .nav-menu, .mobile-nav-drawer {
+  font-family: var(--font-sans) !important;
+}
+
 /* TOP BAR (Utility bar like Rhona/Gobantes) */
 .top-bar {
   background-color: #2d3748;
@@ -694,27 +699,283 @@ a {
   color: white;
 }
 
-/* WHATSAPP FLOATING BUTTON */
-.whatsapp-float {
+/* FLOATING ACTIONS DOCK */
+.floating-dock-container {
   position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background-color: #25d366;
+  bottom: 80px; /* Stacks above scroll-to-top */
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 998;
+}
+
+/* MAIN TRIGGER BUTTON */
+.floating-main-trigger {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: #25d366; /* WhatsApp Green */
   color: white;
-  width: 50px;
-  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 10;
+}
+
+.floating-main-trigger:hover {
+  transform: scale(1.08);
+}
+
+.floating-main-trigger.orange-trigger {
+  background-color: var(--primary); /* Soteel orange */
+  box-shadow: 0 4px 15px rgba(227, 82, 5, 0.3);
+}
+
+.floating-main-trigger.orange-trigger:hover {
+  background-color: var(--primary-hover);
+  transform: scale(1.08) rotate(90deg);
+}
+
+/* COLLAPSED LAYERED PREVIEW STACK */
+.floating-layered-preview-stack {
+  position: relative;
+  width: 65px;
+  height: 65px;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 10;
+}
+
+.floating-layered-preview-stack:hover {
+  transform: scale(1.05);
+}
+
+.layered-preview-btn {
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  transition: var(--transition);
-  z-index: 99;
+  position: absolute;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: all 0.25s ease;
 }
 
-.whatsapp-float:hover {
+.preview-search {
+  background-color: var(--primary); /* Soteel orange */
+  width: 42px;
+  height: 42px;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.preview-whatsapp {
+  background-color: #25d366; /* WhatsApp green */
+  width: 52px;
+  height: 52px;
+  bottom: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.floating-layered-preview-stack:hover .preview-search {
+  transform: translate(-3px, -3px);
+}
+
+.floating-layered-preview-stack:hover .preview-whatsapp {
+  transform: translate(2px, 2px);
+}
+
+/* Red notification badge dot */
+.whatsapp-badge-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 11px;
+  height: 11px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  border: 1.5px solid #25d366;
+  animation: pulseBadge 2s infinite;
+}
+
+@keyframes pulseBadge {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  70% {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 5px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+/* VERTICAL MENU STACK */
+.floating-menu-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-end;
+  margin-bottom: 0.75rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px) scale(0.9);
+  transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+}
+
+.floating-menu-stack.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* MENU ROW (TAG + BUTTON) */
+.floating-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.floating-menu-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.25s ease;
+  color: white;
+}
+
+.btn-search {
+  background-color: var(--primary); /* Soteel orange instead of black */
+}
+
+.btn-search:hover,
+.btn-search.active {
+  background-color: var(--primary-hover);
   transform: scale(1.08);
+}
+
+.btn-whatsapp {
+  background-color: #25d366;
+}
+
+.btn-whatsapp:hover {
+  background-color: #20ba5a;
+  transform: scale(1.08);
+}
+
+/* FLOATING MENU TAGS WITH ORANGE DETAILS */
+.floating-menu-tag {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+}
+
+.tag-orange-primary {
+  background-color: var(--primary); /* Soteel orange tag */
+  color: white;
+  border: 1px solid var(--primary);
+}
+
+.tag-orange-detail {
+  background-color: #ffffff;
+  color: var(--primary); /* Soteel orange */
+  border: 1px solid rgba(227, 82, 5, 0.25); /* light orange border */
+  font-weight: 900;
+}
+
+.floating-menu-row:hover .tag-orange-detail {
+  background-color: #ffffff;
+  border-color: var(--primary);
+  transform: translateX(-2px);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(227, 82, 5, 0.15);
+}
+
+/* SEARCH SLIDE PANEL */
+.floating-search-slide-panel {
+  position: absolute;
+  right: 50px;
+  background-color: white;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  width: 0;
+  height: 40px;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  z-index: 5;
+}
+
+.floating-search-slide-panel.open {
+  width: 230px;
+  opacity: 1;
+  visibility: visible;
+  right: 65px; /* offset to sit nicely next to search button */
+}
+
+.floating-search-form {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 1.25rem;
+  position: relative;
+}
+
+.floating-search-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--secondary);
+  padding-right: 1.5rem;
+}
+
+.floating-search-clear-btn {
+  background: none;
+  border: none;
+  color: #a0aec0;
+  cursor: pointer;
+  position: absolute;
+  right: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.floating-search-clear-btn:hover {
+  color: var(--secondary);
 }
 
 /* SCROLL TO TOP */
@@ -2309,4 +2570,56 @@ a {
   .footer-meta-text {
     text-align: center;
   }
+}
+
+/* SMART HOME CTA ENTRANCE ANIMATIONS */
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleUpFade {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: slideUpFade 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-up {
+  animation: scaleUpFade 1.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* PROCESS CARD COMPONENT STYLING */
+.process-card-group {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.process-card-group:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.07) !important;
+  border-color: rgba(227, 82, 5, 0.2) !important;
+}
+
+.btn-primary-hover-glow:hover {
+  background-color: var(--primary-hover) !important;
+  box-shadow: 0 5px 15px rgba(227, 82, 5, 0.3);
+}
+
+.btn-secondary-hover-glow:hover {
+  background-color: var(--secondary-hover) !important;
+  box-shadow: 0 5px 15px rgba(17, 17, 17, 0.2);
 }

@@ -4,43 +4,6 @@ import Link from 'next/link';
 export default function Footer() {
   return (
     <>
-      {/* YouTube Section */}
-      <section className="instagram-section">
-        <div className="instagram-container">
-          <div className="instagram-header">
-            <a href="https://www.youtube.com/@josegarces3670" target="_blank" rel="noopener noreferrer" className="instagram-title">
-              <Youtube size={20} style={{ color: '#ff0000' }} /> Síguenos en RRSS
-            </a>
-          </div>
-          <div className="instagram-grid">
-            <a href="https://www.youtube.com/@josegarces3670" target="_blank" rel="noopener noreferrer" className="instagram-post">
-              <Zap size={28} style={{ color: 'var(--primary)' }} />
-              <div className="instagram-post-overlay">
-                <span>Materiales Eléctricos</span>
-              </div>
-            </a>
-            <a href="https://www.youtube.com/@josegarces3670" target="_blank" rel="noopener noreferrer" className="instagram-post">
-              <ShoppingCart size={28} style={{ color: 'var(--primary)' }} />
-              <div className="instagram-post-overlay">
-                <span>Envíos Rápidos</span>
-              </div>
-            </a>
-            <a href="https://www.youtube.com/@josegarces3670" target="_blank" rel="noopener noreferrer" className="instagram-post">
-              <Zap size={28} style={{ color: 'var(--primary)' }} />
-              <div className="instagram-post-overlay">
-                <span>Instalaciones de Control</span>
-              </div>
-            </a>
-            <a href="https://www.youtube.com/@josegarces3670" target="_blank" rel="noopener noreferrer" className="instagram-post">
-              <Zap size={28} style={{ color: 'var(--primary)' }} />
-              <div className="instagram-post-overlay">
-                <span>Asistencia Técnica</span>
-              </div>
-            </a>
-          </div>
-        </div>
-      </section>
-
       {/* Main Premium Footer */}
       <footer className="footer-premium">
         <div className="footer-container">
@@ -49,7 +12,7 @@ export default function Footer() {
             {/* Column 1: Brand Info */}
             <div className="footer-column brand-col">
               <Link href="/" className="logo-wrapper" style={{ textDecoration: 'none', display: 'block', width: 'fit-content' }}>
-                <div className="logo-main" style={{ justifyContent: 'flex-start' }}>
+                <div className="logo-main" style={{ justifyContent: 'flex-start', color: '#ffffff' }}>
                   <span>S</span>
                   <span className="logo-o-bolt"><Zap className="logo-zap-icon" /></span>
                   <span>T</span>
@@ -83,6 +46,7 @@ export default function Footer() {
               <ul className="footer-links">
                 <li><Link href="/">Inicio</Link></li>
                 <li><Link href="/productos">Catálogo de Productos</Link></li>
+                <li><Link href="/cotizador">Cotizador en Línea</Link></li>
                 <li><Link href="/nosotros">Quiénes Somos</Link></li>
                 <li><Link href="/contacto">Contacto</Link></li>
               </ul>

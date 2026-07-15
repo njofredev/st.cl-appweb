@@ -197,9 +197,15 @@ function CatalogContent() {
 
     const categoryParam = searchParams.get('category');
     if (categoryParam) {
-      if (categoryParam.toLowerCase() === 'electricidad') setSelectedCategory('Conductores Eléctricos');
-      if (categoryParam.toLowerCase() === 'todas-las-categorias') setSelectedCategory('Todos');
-      if (categoryParam.toLowerCase() === 'solar') setSelectedCategory('Energía Solar');
+      const catVal = categoryParam.toLowerCase();
+      if (catVal === 'conductores' || catVal === 'electricidad') setSelectedCategory('Conductores Eléctricos');
+      else if (catVal === 'iluminacion') setSelectedCategory('Iluminación');
+      else if (catVal === 'canalizacion') setSelectedCategory('Canalización');
+      else if (catVal === 'control') setSelectedCategory('Control y Potencia');
+      else if (catVal === 'solar') setSelectedCategory('Energía Solar');
+      else if (catVal === 'ferreteria') setSelectedCategory('Ferretería Eléctrica');
+      else if (catVal === 'seguridad') setSelectedCategory('Seguridad Industrial');
+      else if (catVal === 'todas-las-categorias') setSelectedCategory('Todos');
     }
   }, [searchParams]);
 
