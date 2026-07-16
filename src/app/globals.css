@@ -234,6 +234,7 @@ a {
   position: relative;
   display: flex;
   align-items: center;
+  overflow: visible !important;
 }
 
 .action-badge {
@@ -253,6 +254,7 @@ a {
   border: 2px solid var(--surface); /* High contrast border against header background */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   padding: 0 2px;
+  z-index: 99 !important;
 }
 
 /* CATEGORY NAVIGATION MENU */
