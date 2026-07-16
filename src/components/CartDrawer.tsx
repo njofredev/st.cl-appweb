@@ -5,7 +5,7 @@ import { useCart } from '@/context/CartContext';
 import { ShoppingCart, Trash2, Plus, Minus, Zap, X } from 'lucide-react';
 
 export default function CartDrawer() {
-  const { cart, cartCount, cartTotal, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart } = useCart();
+  const { cart, cartCount, cartTotal, isCartOpen, setIsCartOpen, updateQuantity, removeFromCart, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<'cart' | 'form'>('cart');
   
@@ -172,7 +172,7 @@ export default function CartDrawer() {
                 >
                   Continuar a Checkout
                 </button>
-                <button
+                 <button
                   type="button"
                   className="continue-shopping-btn"
                   onClick={() => setIsCartOpen(false)}
@@ -195,6 +195,41 @@ export default function CartDrawer() {
                   onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
                 >
                   Seguir comprando
+                </button>
+                <button
+                  type="button"
+                  className="reset-cart-btn"
+                  onClick={() => {
+                    if (confirm('¿Estás seguro de que deseas vaciar el carro de compras?')) {
+                      clearCart();
+                    }
+                  }}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'center',
+                    background: 'none',
+                    border: 'none',
+                    color: '#ef4444',
+                    fontWeight: '700',
+                    fontSize: '0.82rem',
+                    marginTop: '0.6rem',
+                    cursor: 'pointer',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    opacity: 0.8,
+                    transition: 'opacity 0.2s ease, color 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '1';
+                    e.currentTarget.style.color = '#dc2626';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '0.8';
+                    e.currentTarget.style.color = '#ef4444';
+                  }}
+                >
+                  Restablecer carro
                 </button>
               </div>
             )}

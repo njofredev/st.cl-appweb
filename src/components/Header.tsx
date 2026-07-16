@@ -20,6 +20,11 @@ export default function Header({ onSearchChange, initialSearchQuery = '' }: Head
   const [products, setProducts] = useState<any[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -182,7 +187,7 @@ export default function Header({ onSearchChange, initialSearchQuery = '' }: Head
             <button className="header-action-item" onClick={() => setIsCartOpen(true)} aria-label="Carrito">
               <div className="cart-icon-wrapper">
                 <ShoppingCart size={18} />
-                {cartCount > 0 && <span className="action-badge">{cartCount}</span>}
+                {mounted && cartCount > 0 && <span className="action-badge">{cartCount}</span>}
               </div>
               <span>Carro</span>
             </button>
