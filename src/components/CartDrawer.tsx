@@ -172,6 +172,30 @@ export default function CartDrawer() {
                 >
                   Continuar a Checkout
                 </button>
+                <button
+                  type="button"
+                  className="continue-shopping-btn"
+                  onClick={() => setIsCartOpen(false)}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'center',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-muted)',
+                    fontWeight: '700',
+                    fontSize: '0.85rem',
+                    marginTop: '0.75rem',
+                    cursor: 'pointer',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                    transition: 'color 0.2s ease'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = 'var(--primary)'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+                >
+                  Seguir comprando
+                </button>
               </div>
             )}
           </>
