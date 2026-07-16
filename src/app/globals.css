@@ -390,29 +390,6 @@ a {
 
 .usp-icon {
   color: var(--primary);
-  animation: usp-icon-float 2s ease-in-out infinite alternate;
-}
-
-.usp-container .usp-item:nth-child(1) .usp-icon {
-  animation-delay: 0s;
-}
-.usp-container .usp-item:nth-child(2) .usp-icon {
-  animation-delay: 0.4s;
-}
-.usp-container .usp-item:nth-child(3) .usp-icon {
-  animation-delay: 0.8s;
-}
-.usp-container .usp-item:nth-child(4) .usp-icon {
-  animation-delay: 1.2s;
-}
-
-@keyframes usp-icon-float {
-  0% {
-    transform: translateY(1px);
-  }
-  100% {
-    transform: translateY(-3px);
-  }
 }
 
 /* MAIN LAYOUT CONTAINER */
