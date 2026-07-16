@@ -179,6 +179,7 @@ function CatalogContent() {
   // Estados para el Modal de Selección de Cantidad
   const [selectedModalProduct, setSelectedModalProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
   const handleModalConfirm = (quantity: number) => {
     if (selectedModalProduct) {
@@ -298,119 +299,137 @@ function CatalogContent() {
     return 0; // relevancia / orden original de bd
   });
 
+  const renderFilters = () => {
+    return (
+      <>
+        {/* Box 1: Categorías de Productos */}
+        <div className="sidebar-box">
+          <div className="sidebar-box-header">
+            Productos
+          </div>
+          <ul className="sidebar-category-list">
+            {CATEGORIES.map((cat) => (
+              <li key={cat}>
+                <button 
+                  className={`sidebar-category-btn ${selectedCategory === cat ? 'active' : ''}`}
+                  onClick={() => {
+                    setSelectedCategory(cat);
+                    // Opcionalmente podemos cerrar el drawer al seleccionar categoría en mobile,
+                    // pero es mejor dejar que el usuario aplique múltiples filtros.
+                  }}
+                >
+                  <span>{cat}</span>
+                  <span className="plus-icon">{selectedCategory === cat ? '−' : '+'}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Box 2: Filtrar por */}
+        <div className="sidebar-box">
+          <div className="sidebar-box-header">
+            Filtrar por
+          </div>
+          
+          {/* Filter Section: Rango de Precio */}
+          <div className="filter-section">
+            <div className="filter-section-title">
+              Rango de Precio
+            </div>
+            <div className="filter-price-slider">
+              <input 
+                type="range" 
+                min="20000" 
+                max="350000" 
+                step="5000"
+                value={maxPrice} 
+                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                className="custom-range-slider"
+              />
+              <div className="price-labels">
+                <span>$20.000</span>
+                <span>Max: ${maxPrice.toLocaleString('es-CL')}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Filter Section: Marcas */}
+          <div className="filter-section">
+            <div className="filter-section-title">
+              Marcas
+            </div>
+            <ul className="filter-checkbox-list">
+              <li>
+                <label className="checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedBrands.includes('Soteel')} 
+                    onChange={() => toggleBrand('Soteel')}
+                  />
+                  <span>Soteel</span>
+                </label>
+              </li>
+              <li>
+                <label className="checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    checked={selectedBrands.includes('Tuya')} 
+                    onChange={() => toggleBrand('Tuya')}
+                  />
+                  <span>Tuya Smart</span>
+                </label>
+              </li>
+            </ul>
+          </div>
+
+          {/* Filter Section: Stock */}
+          <div className="filter-section">
+            <div className="filter-section-title">
+              Disponibilidad
+            </div>
+            <ul className="filter-checkbox-list">
+              <li>
+                <label className="checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    checked={onlyInStock} 
+                    onChange={() => setOnlyInStock(!onlyInStock)}
+                  />
+                  <span>Solo en Stock ({products.filter(p => p.stock > 0).length})</span>
+                </label>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </>
+    );
+  };
+
+  const activeFiltersCount = 
+    (selectedCategory !== 'Todos' ? 1 : 0) +
+    (maxPrice < 350000 ? 1 : 0) +
+    (selectedBrands.length) +
+    (onlyInStock ? 1 : 0);
+
   return (
     <>
       <Header onSearchChange={setSearchQuery} initialSearchQuery={searchQuery} />
 
-      <main className="container" style={{ display: 'grid', gridTemplateColumns: '260px 1fr', gap: '2.5rem', padding: '3rem 2rem' }}>
+      <main className="container catalog-container">
         
         {/* Panel Lateral Filtros (Gobantes/Rhona Inspired) */}
         <aside className="catalog-sidebar">
-          {/* Box 1: Categorías de Productos */}
-          <div className="sidebar-box">
-            <div className="sidebar-box-header">
-              Productos
-            </div>
-            <ul className="sidebar-category-list">
-              {CATEGORIES.map((cat) => (
-                <li key={cat}>
-                  <button 
-                    className={`sidebar-category-btn ${selectedCategory === cat ? 'active' : ''}`}
-                    onClick={() => setSelectedCategory(cat)}
-                  >
-                    <span>{cat}</span>
-                    <span className="plus-icon">{selectedCategory === cat ? '−' : '+'}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Box 2: Filtrar por */}
-          <div className="sidebar-box">
-            <div className="sidebar-box-header">
-              Filtrar por
-            </div>
-            
-            {/* Filter Section: Rango de Precio */}
-            <div className="filter-section">
-              <div className="filter-section-title">
-                Rango de Precio
-              </div>
-              <div className="filter-price-slider">
-                <input 
-                  type="range" 
-                  min="20000" 
-                  max="350000" 
-                  step="5000"
-                  value={maxPrice} 
-                  onChange={(e) => setMaxPrice(Number(e.target.value))}
-                  className="custom-range-slider"
-                />
-                <div className="price-labels">
-                  <span>$20.000</span>
-                  <span>Max: ${maxPrice.toLocaleString('es-CL')}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Filter Section: Marcas */}
-            <div className="filter-section">
-              <div className="filter-section-title">
-                Marcas
-              </div>
-              <ul className="filter-checkbox-list">
-                <li>
-                  <label className="checkbox-label">
-                    <input 
-                      type="checkbox" 
-                      checked={selectedBrands.includes('Soteel')} 
-                      onChange={() => toggleBrand('Soteel')}
-                    />
-                    <span>Soteel</span>
-                  </label>
-                </li>
-                <li>
-                  <label className="checkbox-label">
-                    <input 
-                      type="checkbox" 
-                      checked={selectedBrands.includes('Tuya')} 
-                      onChange={() => toggleBrand('Tuya')}
-                    />
-                    <span>Tuya Smart</span>
-                  </label>
-                </li>
-              </ul>
-            </div>
-
-            {/* Filter Section: Stock */}
-            <div className="filter-section">
-              <div className="filter-section-title">
-                Disponibilidad
-              </div>
-              <ul className="filter-checkbox-list">
-                <li>
-                  <label className="checkbox-label">
-                    <input 
-                      type="checkbox" 
-                      checked={onlyInStock} 
-                      onChange={() => setOnlyInStock(!onlyInStock)}
-                    />
-                    <span>Solo en Stock ({products.filter(p => p.stock > 0).length})</span>
-                  </label>
-                </li>
-              </ul>
-            </div>
-          </div>
+          {renderFilters()}
         </aside>
 
         {/* Listado de Productos */}
         <div>
-          <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <div className="catalog-header">
             <h1 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <LayoutGrid size={20} /> Catálogo de Insumos
             </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+            <div className="catalog-header-actions">
               {/* Dropdown de ordenamiento */}
               <select 
                 value={sortBy} 
@@ -435,13 +454,59 @@ function CatalogContent() {
                 <option value="price-asc">Precio: Menor a Mayor</option>
                 <option value="price-desc">Precio: Mayor a Menor</option>
               </select>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 'bold' }}>
+              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 'bold' }} className="products-count">
                 {filteredProducts.length} productos encontrados
               </span>
             </div>
           </div>
 
-          <div className="products-grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+          {/* Botón flotante de filtro móvil */}
+          <button 
+            className="mobile-filter-floating-btn" 
+            onClick={() => setIsFilterDrawerOpen(true)}
+          >
+            <SlidersHorizontal size={16} />
+            <span>Filtrar</span>
+            {activeFiltersCount > 0 && (
+              <span className="filter-badge-count">{activeFiltersCount}</span>
+            )}
+          </button>
+
+          {/* Mobile Filter Drawer Overlay & Drawer */}
+          {isFilterDrawerOpen && (
+            <div 
+              className="mobile-filter-drawer-overlay" 
+              onClick={() => setIsFilterDrawerOpen(false)}
+            >
+              <div 
+                className="mobile-filter-drawer" 
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="mobile-filter-drawer-header">
+                  <h2>Filtros</h2>
+                  <button 
+                    className="close-drawer-btn" 
+                    onClick={() => setIsFilterDrawerOpen(false)}
+                  >
+                    &times;
+                  </button>
+                </div>
+                <div className="mobile-filter-drawer-body">
+                  {renderFilters()}
+                </div>
+                <div className="mobile-filter-drawer-footer">
+                  <button 
+                    className="apply-filters-btn" 
+                    onClick={() => setIsFilterDrawerOpen(false)}
+                  >
+                    Ver {filteredProducts.length} productos
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="products-grid">
             {sortedProducts.map((product) => (
               <article className="product-card" key={product.id}>
                 <Link href={`/productos/${product.slug}`} className="product-img-wrapper" style={{ display: 'block', cursor: 'pointer' }}>

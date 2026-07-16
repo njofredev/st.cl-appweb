@@ -199,6 +199,7 @@ export default function Home() {
   // Estados para el Modal de Selección de Cantidad
   const [selectedModalProduct, setSelectedModalProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showMap, setShowMap] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   const scrollPosRef = useRef<number>(0);
 
@@ -227,7 +228,7 @@ export default function Home() {
   const handleCarouselScroll = () => {
     if (!carouselRef.current || filteredProducts.length === 0) return;
     const { scrollLeft, scrollWidth } = carouselRef.current;
-    
+
     // Sincronizar nuestra referencia flotante para evitar saltos al reanudar
     scrollPosRef.current = scrollLeft;
 
@@ -309,7 +310,7 @@ export default function Home() {
     if (isHovered || filteredProducts.length === 0) return;
 
     let animationId: number;
-    
+
     if (carouselRef.current) {
       scrollPosRef.current = carouselRef.current.scrollLeft;
     }
@@ -381,11 +382,11 @@ export default function Home() {
           </div>
           <div className="usp-item">
             <CreditCard size={16} className="usp-icon" />
-            <span>3 Cuotas Sin Interés vía Webpay Plus</span>
+            <span>3 Cuotas Sin Interés vía <strong style={{ color: '#792688' }}>Webpay</strong> <strong style={{ color: '#cb137b' }}>Plus</strong></span>
           </div>
           <div className="usp-item">
             <Store size={16} className="usp-icon" />
-            <span>Retiro en Tienda</span>
+            <span>Retiro en Bodega</span>
           </div>
           <div className="usp-item">
             <Phone size={16} className="usp-icon" />
@@ -545,71 +546,6 @@ export default function Home() {
           </Link>
         </div>
       </main>
-
-      {/* Tuya Smart CTA Section */}
-      <section ref={tuyaSectionRef} style={{ backgroundColor: '#0f172a', borderTop: '1px solid rgba(255,255,255,0.05)', padding: '5rem 2rem', overflow: 'hidden' }}>
-        <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', alignItems: 'center' }}>
-            {/* Left Side: Info & Badges */}
-            <div className={isTuyaVisible ? "animate-fade-up" : ""} style={{ opacity: isTuyaVisible ? 1 : 0, transition: 'opacity 0.3s ease' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(227, 82, 5, 0.15)', color: 'var(--primary)', padding: '0.4rem 1rem', borderRadius: '30px', fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', marginBottom: '1.5rem', letterSpacing: '1px' }}>
-                <Zap size={14} /> Smart Home
-              </div>
-              <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#ffffff', lineHeight: '1.15', marginBottom: '1.25rem' }}>
-                Controla tus dispositivos <span style={{ color: 'var(--primary)' }}>Soteel Smart</span> desde tu celular
-              </h2>
-              <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '2rem' }}>
-                Nuestras torres pop-up inteligentes y enchufes motorizados son totalmente compatibles con la aplicación <strong>Tuya Smart / Smart Life</strong>. Administra la energía de tus espacios, programa encendidos y monitorea el consumo de manera remota mediante conexión Wi-Fi de forma ágil y 100% integrada.
-              </p>
-
-              {/* Badges container */}
-              <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', alignItems: 'center' }}>
-                <a 
-                  href="https://apps.apple.com/es/app/tuya-smart-life-smart-living/id1034649547" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  style={{ display: 'inline-flex', height: '46px', width: '138px', transition: 'transform 0.2s ease' }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                >
-                  <img 
-                    src="/appstore_badge.png" 
-                    alt="Descargar en App Store" 
-                    style={{ height: '46px', width: '138px', display: 'block', borderRadius: '5px' }}
-                  />
-                </a>
-                <a 
-                  href="https://play.google.com/store/apps/details?id=com.tuya.smart&hl=es_CL" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  style={{ display: 'inline-flex', height: '52px', width: '140px', transition: 'transform 0.2s ease' }}
-                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
-                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-                >
-                  <img 
-                    src="/playstore_badge.png" 
-                    alt="Descargar en Google Play Store" 
-                    style={{ height: '52px', width: '140px', display: 'block', borderRadius: '5px' }}
-                  />
-                </a>
-              </div>
-            </div>
-
-            {/* Right Side: Tuya App Image Display */}
-            <div style={{ display: 'flex', justifyContent: 'center', opacity: isTuyaVisible ? 1 : 0, transition: 'opacity 0.3s ease' }} className={isTuyaVisible ? "animate-scale-up" : ""}>
-              <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', overflow: 'hidden', width: '100%', maxWidth: '380px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-                <img 
-                  src="/tuya_app_display.jpg" 
-                  alt="Tuya Smart Application Control" 
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Cómo Comprar o Cotizar Section */}
       <section style={{ backgroundColor: '#f8fafc', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', padding: '5.5rem 2rem' }}>
         <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
@@ -625,7 +561,7 @@ export default function Home() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '3rem' }}>
-            
+
             {/* PATH A: Compra Directa */}
             <div className="process-card-group" style={{ backgroundColor: '#ffffff', border: '1px solid var(--border)', borderRadius: '20px', padding: '2.5rem', boxShadow: 'var(--shadow-md)', transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
@@ -722,51 +658,235 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Sucursal de Entrega Section */}
-      <section style={{ backgroundColor: '#ffffff', borderBottom: '1px solid var(--border)', padding: '5rem 2rem' }}>
+      {/* Tuya Smart CTA Section */}
+      <section ref={tuyaSectionRef} style={{ backgroundColor: '#0f172a', borderTop: '1px solid rgba(255,255,255,0.05)', padding: '5rem 2rem', overflow: 'hidden' }}>
         <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
-            <h2 style={{ fontSize: '1.85rem', fontWeight: 900, color: 'var(--secondary)', marginBottom: '0.75rem' }}>
-              Sucursal de entrega <span style={{ color: 'var(--primary)' }}>Mr.Storage</span> La Reina
-            </h2>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '3.5rem' }}>
-            {/* Google Maps Column */}
-            <div>
-              <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: '0.5rem', marginBottom: '1.5rem', display: 'inline-block' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Google Maps
-                </span>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '4rem', alignItems: 'center' }}>
+            {/* Left Side: Info & Badges */}
+            <div className={isTuyaVisible ? "animate-fade-up" : ""} style={{ opacity: isTuyaVisible ? 1 : 0, transition: 'opacity 0.3s ease' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(227, 82, 5, 0.15)', color: 'var(--primary)', padding: '0.4rem 1rem', borderRadius: '30px', fontSize: '0.75rem', fontWeight: '800', textTransform: 'uppercase', marginBottom: '1.5rem', letterSpacing: '1px' }}>
+                <Zap size={14} /> Smart Home
               </div>
-              <a 
-                href="https://maps.app.goo.gl/r6aXF6UoD8jN5oQD8" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{ display: 'block', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)', transition: 'transform 0.2s ease' }}
-                className="sucursal-link-card"
-              >
-                <img 
-                  src="/mapa_sucursal.png" 
-                  alt="Ubicación Google Maps" 
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                />
-              </a>
+              <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: '#ffffff', lineHeight: '1.15', marginBottom: '1.25rem' }}>
+                Controla tus dispositivos <span style={{ color: 'var(--primary)' }}>Soteel Smart</span> desde tu celular
+              </h2>
+              <p style={{ color: '#cbd5e1', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '2rem' }}>
+                Nuestras torres <strong>pop-up inteligentes</strong> y <strong>enchufes motorizados</strong> son totalmente compatibles con la aplicación <strong>Tuya Smart / Smart Life</strong>. Administra la energía de tus espacios, programa encendidos y monitorea el consumo de manera remota mediante conexión Wi-Fi de forma ágil y 100% integrada.
+              </p>
+
+              {/* Badges container */}
+              <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                <a
+                  href="https://apps.apple.com/es/app/tuya-smart-life-smart-living/id1034649547"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', height: '46px', width: '138px', transition: 'transform 0.2s ease' }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  <img
+                    src="/appstore_badge.png"
+                    alt="Descargar en App Store"
+                    style={{ height: '46px', width: '138px', display: 'block', borderRadius: '5px' }}
+                  />
+                </a>
+                <a
+                  href="https://play.google.com/store/apps/details?id=com.tuya.smart&hl=es_CL"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', height: '52px', width: '140px', transition: 'transform 0.2s ease' }}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                >
+                  <img
+                    src="/playstore_badge.png"
+                    alt="Descargar en Google Play Store"
+                    style={{ height: '52px', width: '140px', display: 'block', borderRadius: '5px' }}
+                  />
+                </a>
+              </div>
             </div>
 
-            {/* Photo Column */}
-            <div>
-              <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: '0.5rem', marginBottom: '1.5rem', display: 'inline-block' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Jorge Alessandri 364, La Reina, RM.
-                </span>
-              </div>
-              <div style={{ border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-                <img 
-                  src="/mr_storage.png" 
-                  alt="Mr. Storage Sucursal de Entrega" 
+            {/* Right Side: Tuya App Image Display */}
+            <div style={{ display: 'flex', justifyContent: 'center', opacity: isTuyaVisible ? 1 : 0, transition: 'opacity 0.3s ease' }} className={isTuyaVisible ? "animate-scale-up" : ""}>
+              <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', overflow: 'hidden', width: '100%', maxWidth: '380px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+                <img
+                  src="/tuya_app_display.jpg"
+                  alt="Tuya Smart Application Control"
                   style={{ width: '100%', height: 'auto', display: 'block' }}
                 />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Sucursal de Entrega Section */}
+      <section style={{ backgroundColor: '#ffffff', borderBottom: '1px solid var(--border)', padding: '5.5rem 2rem' }}>
+        <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(227, 82, 5, 0.08)', color: 'var(--primary)', padding: '0.4rem 1.25rem', borderRadius: '30px', fontSize: '0.8rem', fontWeight: '800', textTransform: 'uppercase', marginBottom: '1rem', letterSpacing: '1px' }}>
+              Punto de Retiro Oficial
+            </div>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: 'var(--secondary)', marginBottom: '0.75rem', lineHeight: '1.2' }}>
+              Retira tus compras en <span style={{ color: 'var(--primary)' }}>Mr.Storage</span> La Reina
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.6' }}>
+              Visítanos para retirar tus pedidos web sin costo de envío o coordinar tus proyectos directamente en nuestro punto de entrega.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '3.5rem', alignItems: 'stretch' }}>
+            {/* Google Maps / Photo Display Column */}
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '2px solid var(--primary)', paddingBottom: '0.5rem', marginBottom: '1.5rem', width: 'fit-content' }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  {showMap ? 'Mapa de Ubicación' : 'Vista de la Sucursal'}
+                </span>
+              </div>
+              <div style={{ flex: 1, minHeight: '350px', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-md)', position: 'relative' }}>
+                {showMap ? (
+                  <>
+                    <iframe
+                      src="https://maps.google.com/maps?cid=327407928017815889&output=embed"
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0, minHeight: '350px', display: 'block' }}
+                      allowFullScreen={true}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      title="Mr. Storage La Reina Location Map"
+                    ></iframe>
+                    <button
+                      onClick={() => setShowMap(false)}
+                      style={{
+                        position: 'absolute',
+                        top: '12px',
+                        right: '12px',
+                        backgroundColor: 'var(--secondary)',
+                        color: 'white',
+                        border: 'none',
+                        padding: '0.5rem 1rem',
+                        borderRadius: '30px',
+                        fontSize: '0.75rem',
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
+                        transition: 'var(--transition)'
+                      }}
+                      className="btn-secondary-hover-glow"
+                    >
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
+                      Ver Foto
+                    </button>
+                  </>
+                ) : (
+                  <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: '350px' }}>
+                    <img
+                      src="/mr-storage-la-reina-2.webp"
+                      alt="Mr. Storage La Reina Sucursal de Entrega"
+                      style={{ width: '100%', height: '100%', minHeight: '350px', objectFit: 'cover', display: 'block' }}
+                    />
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '16px',
+                      right: '16px',
+                      zIndex: 10
+                    }}>
+                      <button
+                        onClick={() => setShowMap(true)}
+                        style={{
+                          backgroundColor: 'var(--primary)',
+                          color: 'white',
+                          border: 'none',
+                          padding: '0.75rem 1.5rem',
+                          borderRadius: '50px',
+                          fontWeight: 'bold',
+                          fontSize: '0.8rem',
+                          cursor: 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          boxShadow: '0 4px 15px rgba(227, 82, 5, 0.4)',
+                          transition: 'var(--transition-spring)',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px'
+                        }}
+                        className="btn-primary-hover-glow"
+                      >
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" y1="3" x2="9" y2="18" /><line x1="15" y1="6" x2="15" y2="21" /></svg>
+                        Ver Mapa
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Branch Details Column */}
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', backgroundColor: '#f8fafc', border: '1px solid var(--border)', borderRadius: '20px', padding: '2.5rem', boxShadow: 'var(--shadow-sm)' }}>
+              <div>
+                <h3 style={{ fontSize: '1.35rem', fontWeight: '900', color: 'var(--secondary)', marginBottom: '1.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
+                  Detalles del Punto de Retiro
+                </h3>
+
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                  <li style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(227, 82, 5, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', flexShrink: 0 }}>
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--secondary)', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Dirección</h4>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>Av. Jorge Alessandri Rodríguez 364, La Reina, Región Metropolitana (Complejo Mr. Storage, Bodega Soteel).</p>
+                    </div>
+                  </li>
+
+                  <li style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(227, 82, 5, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', flexShrink: 0 }}>
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--secondary)', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Horario de Atención</h4>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>Lunes a Viernes: 9:00 hrs a 18:00 hrs (Horario continuado). Sábados, domingos y festivos cerrado.</p>
+                    </div>
+                  </li>
+
+                  <li style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'rgba(227, 82, 5, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', flexShrink: 0 }}>
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
+                    </div>
+                    <div>
+                      <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: 'var(--secondary)', marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Instrucciones de Retiro</h4>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: '1.5', margin: 0 }}>Estacionamiento gratuito disponible. Presenta tu número de cotización o boleta en portería y dirígete al sector de entregas.</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <div style={{ marginTop: '2.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <a
+                  href="https://www.google.com/maps?cid=327407928017815889"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ flex: 1, minWidth: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.85rem', backgroundColor: 'var(--primary)', color: 'white', borderRadius: '12px', fontWeight: 'bold', fontSize: '0.85rem', textDecoration: 'none', transition: 'var(--transition)' }}
+                  className="btn-primary-hover-glow"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" y1="3" x2="9" y2="18" /><line x1="15" y1="6" x2="15" y2="21" /></svg>
+                  Cómo Llegar
+                </a>
+                <a
+                  href="https://wa.me/56912345678"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ flex: 1, minWidth: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', padding: '0.85rem', borderRadius: '12px', fontWeight: 'bold', fontSize: '0.85rem', textDecoration: 'none' }}
+                  className="btn-whatsapp-style"
+                >
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
+                  Coordinar Retiro
+                </a>
               </div>
             </div>
           </div>
@@ -774,86 +894,98 @@ export default function Home() {
       </section>
 
       {/* Clientes Section */}
-      <section style={{ padding: '5rem 2rem', backgroundColor: '#ffffff' }}>
+      <section style={{ padding: '5.5rem 2rem', backgroundColor: '#ffffff' }}>
         <div className="container" style={{ maxWidth: '1100px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-            <h2 style={{ fontSize: '1.85rem', fontWeight: 900, color: 'var(--secondary)', marginBottom: '0.75rem' }}>Clientes</h2>
+          <div style={{ textAlign: 'center', marginBottom: '4.5rem' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'rgba(227, 82, 5, 0.08)', color: 'var(--primary)', padding: '0.4rem 1.25rem', borderRadius: '30px', fontSize: '0.8rem', fontWeight: '800', textTransform: 'uppercase', marginBottom: '1rem', letterSpacing: '1px' }}>
+              Proyectos de Confianza
+            </div>
+            <h2 style={{ fontSize: '2.2rem', fontWeight: 900, color: 'var(--secondary)', marginBottom: '0.75rem', lineHeight: '1.2' }}>
+              Nuestros <span style={{ color: 'var(--primary)' }}>Clientes</span>
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '650px', margin: '0 auto', lineHeight: '1.6' }}>
+              Nos enorgullece colaborar con empresas líderes en el rubro inmobiliario y de construcción, garantizando insumos eléctricos de la más alta calidad.
+            </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '3rem', alignItems: 'center', justifyItems: 'center' }}>
-            {/* Cliente 1: Wood Inmobiliaria */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '240px' }}>
-              <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: '0.4rem', marginBottom: '1.5rem', width: '100%', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.65rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Proyecto Santa María 8700
-                </span>
-              </div>
-              {/* Logo WOOD */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#0f2c59', fontFamily: 'serif' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#0f2c59', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', fontSize: '1.25rem', fontWeight: 'bold' }}>
-                  W
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1' }}>
-                  <span style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '2px' }}>WOOD</span>
-                  <span style={{ fontSize: '0.45rem', letterSpacing: '4px', marginTop: '2px', fontWeight: 'bold' }}>INMOBILIARIA</span>
+          <div className="logo-ticker-container">
+            <div className="logo-ticker-track">
+              {/* Slide 1: Wood */}
+              <div className="ticker-logo-card">
+                <div className="ticker-logo-img-wrapper">
+                  <img src="/wood-logo.svg" alt="Wood Inmobiliaria" className="ticker-logo-img" />
                 </div>
               </div>
-            </div>
 
-            {/* Cliente 2: NALP Constructora */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '240px' }}>
-              <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: '0.4rem', marginBottom: '1.5rem', width: '100%', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.65rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Proyecto La Reina
-                </span>
-              </div>
-              {/* Logo NALP */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#005bb5', textAlign: 'center' }}>
-                <div style={{ width: '60px', height: '60px', border: '3px solid #005bb5', transform: 'rotate(45deg)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ transform: 'rotate(-45deg)', fontSize: '1.5rem', fontWeight: '900', color: '#005bb5', fontFamily: 'sans-serif', marginTop: '2px' }}>A</span>
+              {/* Slide 2: NALP */}
+              <div className="ticker-logo-card">
+                <div className="ticker-logo-img-wrapper">
+                  <img src="/nalp-logo.svg" alt="NALP Constructora" className="ticker-logo-img" />
                 </div>
-                <span style={{ fontSize: '1.6rem', fontWeight: '900', letterSpacing: '3px', color: '#333333', lineHeight: '1' }}>NALP</span>
-                <span style={{ fontSize: '0.55rem', letterSpacing: '1px', color: '#666666', fontWeight: 'bold', marginTop: '2px' }}>Constructora</span>
               </div>
-            </div>
 
-            {/* Cliente 3: Fuegos */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '240px' }}>
-              <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: '0.4rem', marginBottom: '1.5rem', width: '100%', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.65rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Proyecto Vitacura
-                </span>
+              {/* Slide 3: Fuegos */}
+              <div className="ticker-logo-card">
+                <div className="ticker-logo-img-wrapper">
+                  <img src="/fuegos-logo.svg" alt="Fuegos" className="ticker-logo-img" />
+                </div>
               </div>
-              {/* Logo FUEGOS */}
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', color: '#1a1a1a', textAlign: 'center' }}>
-                <svg viewBox="0 0 24 24" width="40" height="40" fill="currentColor" style={{ marginBottom: '0.5rem' }}>
-                  <path d="M12 2C12 2 15 6.5 15 9.5C15 12.5 12 15 12 15C12 15 9 12.5 9 9.5C9 6.5 12 2 12 2Z" />
-                  <path d="M12 6C12 6 13.5 9 13.5 11C13.5 13 12 14.5 12 14.5C12 14.5 10.5 13 10.5 11C10.5 9 12 6 12 6Z" opacity="0.7"/>
-                </svg>
-                <span style={{ fontSize: '1.15rem', fontWeight: '800', letterSpacing: '6px', textTransform: 'uppercase' }}>FUEGOS</span>
-              </div>
-            </div>
 
-            {/* Cliente 4: Proyekta */}
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', maxWidth: '240px' }}>
-              <div style={{ borderBottom: '2px solid var(--primary)', paddingBottom: '0.4rem', marginBottom: '1.5rem', width: '100%', textAlign: 'center' }}>
-                <span style={{ fontSize: '0.65rem', fontWeight: '800', color: 'var(--secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Proyecto Vitacura
-                </span>
+              {/* Slide 4: Proyekta */}
+              <div className="ticker-logo-card">
+                <div className="ticker-logo-img-wrapper">
+                  <img src="/proyekta-logo.svg" alt="Proyekta" className="ticker-logo-img" />
+                </div>
               </div>
-              {/* Logo PROYEKTA */}
-              <div style={{ backgroundColor: '#1a1a1a', color: '#ffffff', padding: '1rem 1.5rem', textAlign: 'center', fontFamily: 'sans-serif', minWidth: '120px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', lineHeight: '1', alignItems: 'center' }}>
-                  <span style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '1px' }}>PRO</span>
-                  <span style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '1px' }}>YEK</span>
-                  <span style={{ fontSize: '1.25rem', fontWeight: '900', letterSpacing: '1px' }}>TA.</span>
-                  <span style={{ fontSize: '0.35rem', letterSpacing: '1.5px', marginTop: '6px', fontWeight: 'bold', color: '#999999' }}>CONSTRUCTORA</span>
+
+              {/* Slide 5: Espiral */}
+              <div className="ticker-logo-card">
+                <div className="ticker-logo-img-wrapper">
+                  <img src="/espiral-logo.svg" alt="Espiral" className="ticker-logo-img" />
+                </div>
+              </div>
+
+              {/* Duplicado para Scroll Infinito */}
+              {/* Slide 6: Wood */}
+              <div className="ticker-logo-card">
+                <div className="ticker-logo-img-wrapper">
+                  <img src="/wood-logo.svg" alt="Wood Inmobiliaria" className="ticker-logo-img" />
+                </div>
+              </div>
+
+              {/* Slide 7: NALP */}
+              <div className="ticker-logo-card">
+                <div className="ticker-logo-img-wrapper">
+                  <img src="/nalp-logo.svg" alt="NALP Constructora" className="ticker-logo-img" />
+                </div>
+              </div>
+
+              {/* Slide 8: Fuegos */}
+              <div className="ticker-logo-card">
+                <div className="ticker-logo-img-wrapper">
+                  <img src="/fuegos-logo.svg" alt="Fuegos" className="ticker-logo-img" />
+                </div>
+              </div>
+
+              {/* Slide 9: Proyekta */}
+              <div className="ticker-logo-card">
+                <div className="ticker-logo-img-wrapper">
+                  <img src="/proyekta-logo.svg" alt="Proyekta" className="ticker-logo-img" />
+                </div>
+              </div>
+
+              {/* Slide 10: Espiral */}
+              <div className="ticker-logo-card">
+                <div className="ticker-logo-img-wrapper">
+                  <img src="/espiral-logo.svg" alt="Espiral" className="ticker-logo-img" />
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+
 
       {/* Shared Footer */}
       <Footer />

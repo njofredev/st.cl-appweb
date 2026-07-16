@@ -93,7 +93,7 @@ const INITIAL_PRODUCTS: Product[] = [
 export default function CotizadorPage() {
   const [catalog, setCatalog] = useState<Product[]>(INITIAL_PRODUCTS);
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Wizard states
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
   const [isPreviewMode, setIsPreviewMode] = useState(false);
@@ -148,7 +148,7 @@ export default function CotizadorPage() {
   }, []);
 
   // Filter Catalog
-  const filteredCatalog = catalog.filter(p => 
+  const filteredCatalog = catalog.filter(p =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase()))
   );
@@ -158,7 +158,7 @@ export default function CotizadorPage() {
     setQuoteItems(prev => {
       const existing = prev.find(item => item.id === product.id);
       if (existing) {
-        return prev.map(item => 
+        return prev.map(item =>
           item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
@@ -175,7 +175,7 @@ export default function CotizadorPage() {
   // Modify Item Price
   const handleUpdatePrice = (id: string, newPriceStr: string) => {
     const price = parseInt(newPriceStr.replace(/\D/g, ''), 10) || 0;
-    setQuoteItems(prev => prev.map(item => 
+    setQuoteItems(prev => prev.map(item =>
       item.id === id ? { ...item, price } : item
     ));
   };
@@ -194,7 +194,7 @@ export default function CotizadorPage() {
   // Direct Input Quantity
   const handleInputQuantity = (id: string, qtyStr: string) => {
     const qty = parseInt(qtyStr, 10) || 1;
-    setQuoteItems(prev => prev.map(item => 
+    setQuoteItems(prev => prev.map(item =>
       item.id === id ? { ...item, quantity: qty > 0 ? qty : 1 } : item
     ));
   };
@@ -244,6 +244,9 @@ export default function CotizadorPage() {
       align-items: center;
       flex-wrap: wrap;
       gap: 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .editor-title-group h1 {
@@ -299,53 +302,59 @@ export default function CotizadorPage() {
     }
 
     .btn-action-secondary {
-      background-color: #1a202c;
+      background-color: #0f172a;
       color: white;
-      padding: 0.75rem 1.25rem;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      border: 1px solid #1e293b;
       cursor: pointer;
-      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1), background-color 0.25s ease, box-shadow 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .btn-action-secondary:hover {
-      background-color: #2d3748;
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 8px 20px rgba(26, 32, 44, 0.15);
+      background-color: #1e293b;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.15);
     }
 
     .btn-action-secondary:active {
-      transform: translateY(0) scale(0.98);
+      transform: translateY(0);
     }
 
     .btn-action-success {
       background-color: #10b981;
       color: white;
-      padding: 0.75rem 1.25rem;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 0.9rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.88rem;
       border: none;
       cursor: pointer;
-      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1), background-color 0.25s ease, box-shadow 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     .btn-action-success:hover {
       background-color: #059669;
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.25);
     }
 
     .btn-action-success:active {
-      transform: translateY(0) scale(0.98);
+      transform: translateY(0);
     }
 
     /* Two Column Layout */
@@ -806,20 +815,24 @@ export default function CotizadorPage() {
 
     /* A4 Printable Quote Design */
     .formal-print-preview-center {
-      display: flex;
-      justify-content: center;
+      display: block;
       padding: 2rem 0;
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .formal-quote-paper {
       background: #ffffff;
-      width: 100%;
-      max-width: 800px;
+      width: 800px;
+      min-width: 800px;
       border: 1px solid #cbd5e1;
       box-shadow: 0 10px 40px rgba(0,0,0,0.06);
       border-radius: 12px;
       padding: 3rem;
       color: #1e293b;
+      margin: 0 auto;
+      box-sizing: border-box;
     }
 
     .quote-sheet-header {
@@ -1026,6 +1039,8 @@ export default function CotizadorPage() {
       display: flex;
       flex-direction: column;
       gap: 0.4rem;
+      padding-right: 1.5rem;
+      box-sizing: border-box;
     }
 
     .quote-totals-formal-row {
@@ -1186,9 +1201,40 @@ export default function CotizadorPage() {
       background-color: #10b981;
     }
 
+    @media (max-width: 768px) {
+      .steps-container {
+        padding: 0.85rem 1rem !important;
+        gap: 0.4rem !important;
+      }
+      .step-item {
+        gap: 0.4rem !important;
+      }
+      .step-desc {
+        display: none !important;
+      }
+      .step-circle {
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 0.75rem !important;
+        border-width: 1.5px !important;
+      }
+      .step-title {
+        font-size: 0.75rem !important;
+      }
+      .step-connector-line {
+        margin: 0 0.4rem !important;
+      }
+    }
+
     /* Print Settings */
     @media print {
-      body {
+      @page {
+        size: letter;
+        margin: 15mm;
+      }
+      html, body {
+        width: 794px !important;
+        min-width: 794px !important;
         background: white !important;
         color: black !important;
         font-size: 11px !important;
@@ -1205,8 +1251,14 @@ export default function CotizadorPage() {
         box-shadow: none !important;
         padding: 0 !important;
         margin: 0 !important;
-        max-width: 100% !important;
-        width: 100% !important;
+        width: 794px !important;
+        max-width: 794px !important;
+      }
+      .quote-totals-formal-row.total-bold span.total-orange {
+        color: #0f172a !important; /* Force high-contrast slate/black total when printing */
+      }
+      .quote-totals-formal-table {
+        padding-right: 1.5rem !important;
       }
       .container {
         padding: 0 !important;
@@ -1261,31 +1313,31 @@ export default function CotizadorPage() {
 
       {/* Contenido Principal con clase .container oficial del sitio */}
       <main className="container">
-        
+
         {/* Toggle Modo Vista Previa / Editor */}
         <div className="no-print editor-top-bar">
           <div className="editor-title-group">
             <h1>
               <FileText style={{ color: 'var(--primary)' }} />
-              Cotizador Profesional SOTEEL
+              Cotizador SOTEEL
             </h1>
             <p>
-              {isPreviewMode 
-                ? 'Vista previa de la cotización formal en formato Carta para imprimir o guardar como PDF' 
-                : 'Completa los pasos para armar una cotización formal y generar el documento'
+              {isPreviewMode
+                ? 'Vista previa de la cotización formal en formato Carta para imprimir o guardar como PDF'
+                : 'Completa los pasos para armar una cotización formal y un documento PDF'
               }
             </p>
           </div>
           {isPreviewMode && (
             <div className="editor-actions-group">
-              <button 
+              <button
                 onClick={() => setIsPreviewMode(false)}
                 className="btn-action-secondary"
               >
                 <ArrowLeft size={16} />
                 Volver a Edición
               </button>
-              <button 
+              <button
                 onClick={handlePrint}
                 className="btn-action-success"
               >
@@ -1299,7 +1351,7 @@ export default function CotizadorPage() {
         {/* INDICADOR DE PASOS (SOLO EN EDICIÓN) */}
         {!isPreviewMode && (
           <div className="no-print steps-container">
-            <div 
+            <div
               className={`step-item ${currentStep === 1 ? 'active' : currentStep > 1 ? 'completed' : ''}`}
               onClick={() => setCurrentStep(1)}
             >
@@ -1314,7 +1366,7 @@ export default function CotizadorPage() {
 
             <div className={`step-connector-line ${currentStep > 1 ? 'completed' : ''}`} />
 
-            <div 
+            <div
               className={`step-item ${currentStep === 2 ? 'active' : currentStep > 2 ? 'completed' : ''}`}
               onClick={() => quoteItems.length > 0 && setCurrentStep(2)}
               style={{ opacity: quoteItems.length === 0 ? 0.5 : 0.9, cursor: quoteItems.length === 0 ? 'not-allowed' : 'pointer' }}
@@ -1330,7 +1382,7 @@ export default function CotizadorPage() {
 
             <div className={`step-connector-line ${currentStep > 2 ? 'completed' : ''}`} />
 
-            <div 
+            <div
               className={`step-item ${currentStep === 3 ? 'active' : ''}`}
               onClick={() => quoteItems.length > 0 && clientName && clientCompany && setCurrentStep(3)}
               style={{ opacity: (quoteItems.length === 0 || !clientName || !clientCompany) ? 0.5 : 0.9, cursor: (quoteItems.length === 0 || !clientName || !clientCompany) ? 'not-allowed' : 'pointer' }}
@@ -1347,7 +1399,7 @@ export default function CotizadorPage() {
         {/* MODO EDICIÓN */}
         {!isPreviewMode && (
           <div className="no-print">
-            
+
             {/* PASO 1: SELECCIÓN DE PRODUCTOS */}
             {currentStep === 1 && (
               <div className="editor-workspace">
@@ -1359,8 +1411,8 @@ export default function CotizadorPage() {
                     </h3>
                     <div className="search-container">
                       <Search className="search-icon-inside" size={18} />
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         placeholder="Escribe nombre de producto o categoría..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -1371,14 +1423,14 @@ export default function CotizadorPage() {
                     {/* Listado Resultados de Catálogo */}
                     <div className="catalog-results-grid">
                       {filteredCatalog.map(product => (
-                        <div 
+                        <div
                           key={product.id}
                           className="catalog-item-card"
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', minWidth: 0, flex: 1 }}>
-                            <img 
-                              src={product.imageUrl || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=64&q=80'} 
-                              alt={product.name} 
+                            <img
+                              src={product.imageUrl || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=64&q=80'}
+                              alt={product.name}
                               className="catalog-item-media"
                             />
                             <div className="catalog-item-details">
@@ -1390,7 +1442,7 @@ export default function CotizadorPage() {
                               </span>
                             </div>
                           </div>
-                          <button 
+                          <button
                             onClick={() => handleAddCatalogItem(product)}
                             className="catalog-btn-add"
                             title="Agregar a la cotización"
@@ -1440,7 +1492,7 @@ export default function CotizadorPage() {
                                   </span>
                                 </div>
                               </div>
-                              <button 
+                              <button
                                 onClick={() => handleRemoveItem(item.id)}
                                 className="btn-delete-item"
                               >
@@ -1449,22 +1501,22 @@ export default function CotizadorPage() {
                             </div>
 
                             <div className="cart-item-actions-qty">
-                              <span className="cart-item-subtotal">Subtotal: ${ (item.price * item.quantity).toLocaleString('es-CL') }</span>
+                              <span className="cart-item-subtotal">Subtotal: ${(item.price * item.quantity).toLocaleString('es-CL')}</span>
                               <div className="qty-controls-group">
-                                <button 
+                                <button
                                   type="button"
                                   onClick={() => handleUpdateQuantity(item.id, -1)}
                                   className="qty-btn"
                                 >
                                   -
                                 </button>
-                                <input 
-                                  type="text" 
+                                <input
+                                  type="text"
                                   value={item.quantity}
                                   onChange={(e) => handleInputQuantity(item.id, e.target.value)}
                                   className="qty-input"
                                 />
-                                <button 
+                                <button
                                   type="button"
                                   onClick={() => handleUpdateQuantity(item.id, 1)}
                                   className="qty-btn"
@@ -1500,7 +1552,7 @@ export default function CotizadorPage() {
                       </div>
                     </div>
 
-                    <button 
+                    <button
                       onClick={() => setCurrentStep(2)}
                       disabled={quoteItems.length === 0}
                       className="btn-action-primary"
@@ -1523,8 +1575,8 @@ export default function CotizadorPage() {
                   <div className="form-row-grid-2">
                     <div className="form-field-group">
                       <label>Nombre de Contacto</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         placeholder="Juan Pérez"
                         value={clientName}
                         onChange={(e) => setClientName(e.target.value)}
@@ -1533,8 +1585,8 @@ export default function CotizadorPage() {
                     </div>
                     <div className="form-field-group">
                       <label>Empresa / Razón Social</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         placeholder="Constructora S.A."
                         value={clientCompany}
                         onChange={(e) => setClientCompany(e.target.value)}
@@ -1545,8 +1597,8 @@ export default function CotizadorPage() {
                   <div className="form-row-grid-2">
                     <div className="form-field-group">
                       <label>RUT Empresa</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         placeholder="12.345.678-9"
                         value={clientRut}
                         onChange={(e) => setClientRut(e.target.value)}
@@ -1555,8 +1607,8 @@ export default function CotizadorPage() {
                     </div>
                     <div className="form-field-group">
                       <label>Correo Electrónico</label>
-                      <input 
-                        type="email" 
+                      <input
+                        type="email"
                         placeholder="cliente@correo.com"
                         value={clientEmail}
                         onChange={(e) => setClientEmail(e.target.value)}
@@ -1567,8 +1619,8 @@ export default function CotizadorPage() {
                   <div className="form-row-grid-2">
                     <div className="form-field-group">
                       <label>Teléfono</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         placeholder="+56 9 1234 5678"
                         value={clientPhone}
                         onChange={(e) => setClientPhone(e.target.value)}
@@ -1577,8 +1629,8 @@ export default function CotizadorPage() {
                     </div>
                     <div className="form-field-group">
                       <label>Dirección Comercial</label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         placeholder="Av. Providencia 1234, Oficina 501"
                         value={clientAddress}
                         onChange={(e) => setClientAddress(e.target.value)}
@@ -1588,14 +1640,14 @@ export default function CotizadorPage() {
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2rem', gap: '1rem' }}>
-                    <button 
-                      onClick={() => setCurrentStep(1)} 
+                    <button
+                      onClick={() => setCurrentStep(1)}
                       className="btn-action-secondary"
                     >
                       Atrás: Productos
                     </button>
-                    <button 
-                      onClick={() => setCurrentStep(3)} 
+                    <button
+                      onClick={() => setCurrentStep(3)}
                       disabled={!clientName.trim() || !clientCompany.trim()}
                       className="btn-action-primary"
                       title={(!clientName.trim() || !clientCompany.trim()) ? "Ingresa al menos Nombre de Contacto y Empresa para continuar" : ""}
@@ -1700,8 +1752,8 @@ export default function CotizadorPage() {
                     {/* Control Descuento */}
                     <div className="discount-inline-form">
                       <label>Aplicar Descuento (%):</label>
-                      <input 
-                        type="number" 
+                      <input
+                        type="number"
                         min="0"
                         max="100"
                         value={discountPercent}
@@ -1735,7 +1787,7 @@ export default function CotizadorPage() {
                       </div>
                     </div>
 
-                    <button 
+                    <button
                       onClick={() => setIsPreviewMode(true)}
                       className="btn-action-primary"
                       style={{ width: '100%', justifyContent: 'center', marginTop: '1.5rem', padding: '0.85rem' }}
@@ -1744,7 +1796,7 @@ export default function CotizadorPage() {
                       Generar Cotización Formal
                     </button>
 
-                    <button 
+                    <button
                       onClick={() => setCurrentStep(2)}
                       className="btn-action-secondary"
                       style={{ width: '100%', justifyContent: 'center', marginTop: '0.5rem', padding: '0.75rem', backgroundColor: '#334155' }}
@@ -1763,7 +1815,7 @@ export default function CotizadorPage() {
         {isPreviewMode && (
           <div className="formal-print-preview-center">
             <div className="formal-quote-paper">
-              
+
               {/* Encabezado: Logo y Datos Emisor */}
               <div className="quote-sheet-header">
                 <div className="quote-sheet-logo-area">
@@ -1792,7 +1844,7 @@ export default function CotizadorPage() {
                 <div className="quote-doc-details-card">
                   <h2>COTIZACIÓN</h2>
                   <div className="quote-num-label">{quoteNumber}</div>
-                  
+
                   <div className="quote-doc-meta-table">
                     <div className="quote-meta-row">
                       <span className="meta-title">Fecha Emisión:</span>

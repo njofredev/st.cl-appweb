@@ -25,7 +25,7 @@ export default function Footer() {
                 </div>
               </Link>
               <p className="brand-text">
-                Líderes en insumos eléctricos de alta gama, torres pop-up motorizadas, transferencias automáticas y soluciones solares. Calidad certificada para proyectos residenciales y corporativos.
+                Calidad certificada para proyectos residenciales y corporativos.
               </p>
               <div className="footer-social-row">
                 <a href="https://www.youtube.com/@josegarces3670" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="YouTube">
@@ -77,20 +77,11 @@ export default function Footer() {
 
             {/* Column 4: Secure Payment */}
             <div className="footer-column">
-              <h3>Pagos y Garantías</h3>
-              <div className="payment-security-box">
-                <div className="security-badge">
-                  <ShieldCheck size={20} className="badge-icon-primary" />
-                  <div>
-                    <h4>Transbank Webpay Plus</h4>
-                    <p>Pago seguro cifrado SSL de 256 bits</p>
-                  </div>
-                </div>
-                <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                  <span className="payment-chip">Webpay</span>
-                  <span className="payment-chip">Visa</span>
-                  <span className="payment-chip">Mastercard</span>
-                  <span className="payment-chip">Débito</span>
+              <h3>Pagos</h3>
+              <div className="payment-security-box" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100px', padding: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', justifyContent: 'center', width: '100%' }}>
+                  <img src="/webpayplus-logo.svg" alt="Webpay Plus" style={{ height: '30px', objectFit: 'contain', display: 'block', flexShrink: 0 }} />
+                  <img src="/SSL.svg" alt="Seguridad SSL" style={{ height: '70px', objectFit: 'contain', display: 'block', flexShrink: 0 }} />
                 </div>
               </div>
             </div>
