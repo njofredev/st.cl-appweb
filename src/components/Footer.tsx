@@ -2,6 +2,13 @@ import { Youtube, Zap, ShoppingCart, Phone, Mail, MapPin, Clock, Instagram, Face
 import Link from 'next/link';
 
 export default function Footer() {
+  const handleHomeClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (typeof window !== 'undefined' && window.location.pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <>
       {/* Main Premium Footer */}
@@ -11,7 +18,7 @@ export default function Footer() {
 
             {/* Column 1: Brand Info */}
             <div className="footer-column brand-col">
-              <Link href="/" className="logo-wrapper" style={{ textDecoration: 'none', display: 'block', width: 'fit-content' }}>
+              <Link href="/" onClick={handleHomeClick} className="logo-wrapper" style={{ textDecoration: 'none', display: 'block', width: 'fit-content' }}>
                 <div className="logo-main" style={{ justifyContent: 'flex-start', color: '#ffffff' }}>
                   <span>S</span>
                   <span className="logo-o-bolt"><Zap className="logo-zap-icon" /></span>
@@ -44,7 +51,7 @@ export default function Footer() {
             <div className="footer-column">
               <h3>Navegación</h3>
               <ul className="footer-links">
-                <li><Link href="/">Inicio</Link></li>
+                <li><Link href="/" onClick={handleHomeClick}>Inicio</Link></li>
                 <li><Link href="/productos">Catálogo de Productos</Link></li>
                 <li><Link href="/cotizador">Cotizador en Línea</Link></li>
                 <li><Link href="/nosotros">Quiénes Somos</Link></li>
