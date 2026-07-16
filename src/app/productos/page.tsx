@@ -494,9 +494,35 @@ function CatalogContent() {
                 <div className="mobile-filter-drawer-body">
                   {renderFilters()}
                 </div>
-                <div className="mobile-filter-drawer-footer">
+                <div className="mobile-filter-drawer-footer" style={{ display: 'flex', gap: '0.75rem', borderTop: '1px solid var(--border)', padding: '1rem' }}>
+                  <button 
+                    className="reset-filters-btn" 
+                    style={{
+                      flex: '1',
+                      padding: '0.8rem',
+                      borderRadius: 'var(--radius-md)',
+                      backgroundColor: 'var(--surface)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--secondary)',
+                      fontWeight: '700',
+                      fontSize: '0.8rem',
+                      textTransform: 'uppercase',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.2s ease'
+                    }}
+                    onClick={() => {
+                      setSelectedCategory('Todos');
+                      setMaxPrice(350000);
+                      setSelectedBrands([]);
+                      setOnlyInStock(false);
+                      setSearchQuery('');
+                    }}
+                  >
+                    Restablecer
+                  </button>
                   <button 
                     className="apply-filters-btn" 
+                    style={{ flex: '1.8' }}
                     onClick={() => setIsFilterDrawerOpen(false)}
                   >
                     Ver {filteredProducts.length} productos
