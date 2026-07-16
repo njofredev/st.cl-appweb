@@ -238,19 +238,21 @@ a {
 
 .action-badge {
   position: absolute;
-  top: -8px;
-  right: -8px;
-  background-color: var(--primary);
+  top: -9px;
+  right: -9px;
+  background-color: var(--primary); /* Soteel Orange */
   color: white;
-  font-size: 0.65rem;
-  font-weight: 700;
-  min-width: 16px;
-  height: 16px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2px;
+  border: 2px solid var(--surface); /* High contrast border against header background */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 0 2px;
 }
 
 /* CATEGORY NAVIGATION MENU */
